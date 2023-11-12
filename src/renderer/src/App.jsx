@@ -7,16 +7,8 @@ import ItemList from './components/ItemList'
 import ItemListFilters from './components/ItemListFilters'
 
 export default function App() {
-  // const initialState = {
-  //   itemList: [],
-  //   filteredList: [],
-  //   filters: { name: '', checked: false }
-  // }
-
   const [itemList, setItemList] = useState([])
   const [filters, setFilters] = useState({ name: '', checked: false })
-
-  // const [state, setState] = useState(initialState)
 
   useEffect(() => {
     window.api.getList()
@@ -24,25 +16,24 @@ export default function App() {
 
   useEffect(() => {
     window.electron.ipcRenderer.on('list-updated', handleUpdateList)
-    console.log('useEffect ipcRenderer on list-updated')
     return () => {
       window.electron.ipcRenderer.removeListener('list-updated', handleUpdateList)
     }
   })
 
   function handleUpdateList(event, list) {
-    console.log('handleUpdateList', list)
     const newList = getFilteredList(list)
     setItemList([...newList])
   }
 
-  function handleFilters(name, checked) {
-    const newFilters = { ...filters }
-    newFilters.name = name
-    newFilters.checked = checked
-    window.api.getList()
+  async function handleFilters(name, checked) {
+    console.log('handleFilters', name, checked)
+    const newFilters = {
+      name: name,
+      checked: checked
+    }
     setFilters(newFilters)
-    // getFilteredList()
+    await window.api.getList()
   }
 
   function getFilteredList(list) {
@@ -50,9 +41,7 @@ export default function App() {
     if (filters.name.length > 0 || filters.checked) {
       filteredList = list.filter((item) => {
         let result = item.name.toUpperCase().includes(filters.name.toUpperCase())
-        if (filters.checked) {
-          result = result && !item.checked
-        }
+        if (filters.checked) result = result && !item.checked
         return result
       })
     }
@@ -62,15 +51,11 @@ export default function App() {
 
   function handleChecked(item) {
     item.checked = !item.checked
-    console.log('update checked item', item)
     window.api.updateItem(item)
   }
 
   async function handleDelete(item) {
-    console.log('delete item', item)
-    await window.api.deleteItem(item).then(() => {
-      console.log('item deleted')
-    })
+    await window.api.deleteItem(item)
   }
 
   return (
@@ -90,7 +75,12 @@ export default function App() {
       <ItemInputForm />
 
       {/* Componente encargado de mostrar los elementos de la lista */}
-      <ItemList listModel={itemList} deleteCallback={handleDelete} checkCallback={handleChecked} />
+      <ItemList
+        itemList={itemList}
+        filters={filters}
+        deleteCallback={handleDelete}
+        checkCallback={handleChecked}
+      />
 
       {/* Componente encargado aplicar filtros la lista */}
       <ItemListFilters filterCallback={handleFilters} />

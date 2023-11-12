@@ -63,13 +63,8 @@ $theme-colors: (
     input[type="text"] {
       transition: border-color 0.3s ease-in-out;
 
-      &::placeholder {
-        // color: $primary;
-      }
-
       &:focus {
         outline: none;
-        // border-color: $primary;
       }
     }
   }
@@ -86,14 +81,8 @@ $theme-colors: (
       width: auto;
     }
 
-    .filter-search {}
-
     .filter-completed {
       transition: background-color 0.3s ease-in-out;
-
-      &:hover {
-        // background-color: $light;
-      }
 
       label {
         display: grid;
@@ -110,14 +99,9 @@ $theme-colors: (
           .icon-hidden {
             display: none;
           }
-
-          &:hover {
-            // color: $primary;
-          }
         }
 
         &:checked ~ label {
-          // color: $info;
 
           .icon-visible {
             display: none;
@@ -136,20 +120,15 @@ $theme-colors: (
   }
 }
 
-#grocery-list {
+#app-list {
 
   li {
     user-select: none;
     transition: background-color 0.3s ease-in-out;
 
-    &:hover {
-      // background-color: $light;
-    }
-
     input:checked ~ label {
       text-decoration: line-through;
       font-style: italic;
-      // color: $dark;
     }
 
     label {

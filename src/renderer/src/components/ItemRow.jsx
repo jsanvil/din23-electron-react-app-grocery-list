@@ -1,8 +1,12 @@
+import parse from 'html-react-parser'
+
+// función para resaltar el texto que coincide con el filtro
 function formatFilteredName(name, filter) {
   if (!filter) {
     return name
   }
-  return name.replace(new RegExp(`(${filter})`, 'gi'), '<em>$1</em>')
+  // se utiliza html-react-parser para convertir el string en un elemento React
+  return parse(name.replace(new RegExp(`(${filter})`, 'gi'), '<em>$1</em>'))
 }
 
 export default function ItemRow({ item, filter, deleteCallback, editCallback, checkCallback }) {
@@ -15,19 +19,18 @@ export default function ItemRow({ item, filter, deleteCallback, editCallback, ch
   }
 
   return (
-    <li className="list-group-item d-flex justify-content-between align-items-center">
+    <li className="list-group-item d-flex justify-content-between align-items-center gap-2">
       {/* checkbox */}
       <input
-        id="item-status"
+        id={`item-status-${item.id}`}
         type="checkbox"
         name="completed"
         className="form-check-input"
         defaultChecked={item.checked}
         onClick={() => handleChecked(event, item)}
-      //onChange={() => handleChecked(event, item)}
       />
       {/* nombre */}
-      <label htmlFor="item-status">{formatFilteredName(item.name, filter)}</label>
+      <label htmlFor={`item-status-${item.id}`}>{formatFilteredName(item.name, filter)}</label>
       {/* cantidad */}
       <em className="small border rounded px-1">x{item.quantity}</em>
       {/* espaciador */}
