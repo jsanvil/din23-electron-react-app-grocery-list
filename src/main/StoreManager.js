@@ -16,6 +16,11 @@ export class StoreManager extends Store {
     return this.list
   }
 
+  getItem(itemId) {
+    this.getList()
+    return this.list.find((item) => item.id == itemId)
+  }
+
   addItem(item) {
     this.list = [...this.list, item]
     return this.saveList()

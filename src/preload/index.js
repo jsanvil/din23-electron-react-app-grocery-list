@@ -7,6 +7,17 @@ const api = {
     console.log('RENDERER store:get-list')
     await ipcRenderer.invoke('store:get-list')
   },
+  getItem: (itemId) => {
+    console.log('RENDERER store:get-item', itemId)
+    return ipcRenderer.invoke('store:get-item', itemId)
+    // result.then((item) => {
+    //   console.log('RENDERER store:get-item RESULT', item)
+    //   return item
+    // })
+    // .then((result) => {
+    //   console.log('RENDERER store:get-item RESULT', result)
+    // })
+  },
   addItem: (item) => {
     console.log('RENDERER store:add-item', item)
     ipcRenderer.send('store:add-item', item)
@@ -14,21 +25,12 @@ const api = {
   deleteItem: async (item) => {
     console.log('RENDERER store:delete-item', item)
     await ipcRenderer.invoke('store:delete-item', item)
-    // .then((result) => {
-    //   listUpdated(result)
-    // })
   },
   updateItem: (item) => {
     console.log('RENDERER store:update-item', item)
     ipcRenderer.send('store:update-item', item)
   }
 }
-
-// function listUpdated(list) {
-//   // console.log('list-updated', list)
-//   const listElement = new CustomEvent('list-updated', { detail: list })
-//   document.dispatchEvent(listElement)
-// }
 
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise

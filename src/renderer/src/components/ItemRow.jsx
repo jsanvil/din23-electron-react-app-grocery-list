@@ -1,4 +1,5 @@
 import parse from 'html-react-parser'
+import { useNavigate } from 'react-router-dom'
 
 // función para resaltar el texto que coincide con el filtro
 function formatFilteredName(name, filter) {
@@ -9,7 +10,9 @@ function formatFilteredName(name, filter) {
   return parse(name.replace(new RegExp(`(${filter})`, 'gi'), '<em>$1</em>'))
 }
 
-export default function ItemRow({ item, filter, deleteCallback, editCallback, checkCallback }) {
+export default function ItemRow({ item, filter, deleteCallback, checkCallback }) {
+  const navigate = useNavigate();
+
   function handleChecked(event, item) {
     const updatedItem = { ...item }
     updatedItem.checked = !item.checked
@@ -39,7 +42,8 @@ export default function ItemRow({ item, filter, deleteCallback, editCallback, ch
       <button
         className="btn btn-link edit py-1 px-2"
         title="editar"
-        onClick={() => editCallback(item)}
+        // onClick={() => editCallback(item)}
+        onClick={() => navigate(`./${item.id}`)}
       >
         <i className="bi bi-pencil"></i>
       </button>

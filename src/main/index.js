@@ -73,9 +73,16 @@ ipcMain.handle('store:get-list', async () => {
   }
 })
 
+// GET ITEM (ID)
+ipcMain.handle('store:get-item', async (event, itemId) => {
+  console.log('MAIN store:get-item', itemId)
+  const item = store.getItem(itemId)
+  console.log('MAIN store:get-item RESULT', item)
+  return item
+})
+
 ipcMain.on('store:add-item', (event, item) => {
   console.log('MAIN store:add-item', item)
-  // event.sender.send('list-updated', store.getList())
   mainWindow.send('list-updated', store.addItem(item))
 })
 
