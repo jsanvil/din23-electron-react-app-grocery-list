@@ -15,8 +15,8 @@ export default function ItemList({
             item={item}
             key={item.id}
             filter={filters.name}
-            deleteCallback={() => deleteCallback(item)}
-            editCallback={() => editCallback(item)}
+            deleteCallback={deleteCallback}
+            editCallback={editCallback}
             checkCallback={checkCallback}
           />
         ))}

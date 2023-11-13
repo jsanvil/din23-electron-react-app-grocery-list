@@ -4,6 +4,8 @@ Aplicación de ejemplo para gestionar una lista de la compra.
 
 Realizada con **_Electron_**, **_React_** y **_Vite_** para el módulo de **Desarrollo de Interfaces** de **2º DAM**.
 
+![Captura de pantalla](./doc/screen-list.png)
+
 ## Instalación de dependencias
 
 ```bash
