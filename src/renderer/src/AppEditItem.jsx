@@ -1,18 +1,23 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
-import Item from './model/Item.class'
+import { useParams, useNavigate } from 'react-router-dom'
 
 export default function AppEditItem() {
+  // item es el estado que contiene el elemento a editar
   const [item, setItem] = useState({})
 
+  // originalItem estado original del elemento
+  // usado para comparar si hubo cambios
+  const [originalItem, setOriginalItem] = useState({})
+
+  // Obtiene el id del item de la URL
   const { itemId } = useParams()
 
   const navigate = useNavigate()
 
   useEffect(() => {
     window.api.getItem(itemId).then((itemFetched) => {
-      console.log('result getItem', itemFetched)
-      setItem(itemFetched)
+      setItem({ ...itemFetched })
+      setOriginalItem({ ...itemFetched })
     })
   }, [])
 
@@ -20,15 +25,36 @@ export default function AppEditItem() {
     event.preventDefault()
     const name = event.target.itemName.value
     if (!name) return
-    item.name = name
-    window.api.updateItem(item)
+    const newItem = { ...item, name: name }
+    window.api.updateItem(newItem)
     event.target.reset()
     event.target.itemName.focus()
     navigate('/')
   }
 
   async function handleDelete(item) {
-    await window.api.deleteItem(item)
+    const confirm = await window.api.deleteItem(item)
+    if (confirm) navigate('/')
+  }
+
+  async function handleDiscard() {
+    const confirm = await window.api.confirmItem(item)
+    switch (confirm) {
+      case 'discard':
+      case 'save':
+        navigate('/')
+        break
+      case 'cancel':
+        break
+    }
+  }
+
+  function setName(name) {
+    setItem({ ...item, name: name })
+  }
+
+  function setQuantity(quantity) {
+    setItem({ ...item, quantity: quantity })
   }
 
   return (
@@ -53,12 +79,11 @@ export default function AppEditItem() {
               autoComplete="off"
               className="form-control"
               placeholder="producto..."
-              onChange={() => setItem({ ...item, name: event.target.value })}
-              value={item.name}
+              onChange={() => setName(event.target.value)}
+              value={item.name ?? ''}
             />
           </div>
           <div className="input-group">
-            {/* item.quantity */}
             <span className="input-group-text text-primary col-2">
               <i className="bi bi-hash"> Cantidad:</i>
             </span>
@@ -70,20 +95,31 @@ export default function AppEditItem() {
               min="1"
               className="form-control"
               placeholder="cantidad..."
-              onChange={() => setItem({ ...item, quantity: event.target.value })}
-              value={item.quantity}
+              onChange={() => setQuantity(event.target.value)}
+              value={item.quantity ?? ''}
             />
           </div>
           <div className="d-flex gap-2">
-            <button id="btnEdit" title="Borrar" className="btn btn-danger" onClick={handleDelete}>
+            <button
+              id="btnDelete"
+              title="Borrar"
+              type="button"
+              className="btn btn-danger"
+              onClick={() => handleDelete(item)}
+            >
               <i className="bi bi-trash"> Borrar</i>
             </button>
-            <button id="btnEdit" title="Guardar" className="btn btn-primary">
+            <button id="btnSave" title="Guardar" className="btn btn-primary">
               <i className="bi bi-save"> Guardar cambios</i>
             </button>
-            <Link to="/" className="btn btn-secondary">
+            <button
+              id="btnDiscard"
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => handleDiscard()}
+            >
               <i className="bi bi-arrow-left"> Volver</i>
-            </Link>
+            </button>
           </div>
         </div>
       </form>

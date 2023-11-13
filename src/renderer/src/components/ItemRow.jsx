@@ -11,13 +11,12 @@ function formatFilteredName(name, filter) {
 }
 
 export default function ItemRow({ item, filter, deleteCallback, checkCallback }) {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   function handleChecked(event, item) {
     const updatedItem = { ...item }
     updatedItem.checked = !item.checked
     event.target.checked = updatedItem.checked
-    console.log('update checked item', item)
     checkCallback(item)
   }
 

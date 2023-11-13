@@ -1,16 +1,16 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { HashRouter, Route, Routes } from 'react-router-dom'
 
-// Componentes de la aplicación
+// Componentes que harán de vistas de la aplicación
 import AppList from './AppList'
 import AppEditItem from './AppEditItem'
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="/" element={<AppList />} />
         <Route path="/:itemId" element={<AppEditItem />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   )
 }

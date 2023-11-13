@@ -7,13 +7,20 @@ import ItemList from './components/ItemList'
 import ItemListFilters from './components/ItemListFilters'
 
 export default function App() {
+  // itemList es el estado que contiene la lista de elementos
   const [itemList, setItemList] = useState([])
+
+  // filters es el estado que contiene los filtros de la lista
   const [filters, setFilters] = useState({ name: '', checked: false })
 
+  // useEffect se utiliza para sincronizar con un sistema externo
+  // En este caso, se utiliza para obtener la lista de desde el proceso principal
   useEffect(() => {
     window.api.getList()
   }, [])
 
+  // Se activa el listener para recibir la lista de elementos
+  // cada vez que haya cambios actualizará la lista
   useEffect(() => {
     window.electron.ipcRenderer.on('list-updated', handleUpdateList)
     return () => {
@@ -26,8 +33,8 @@ export default function App() {
     setItemList([...newList])
   }
 
+  // Actualiza los filtros y vuelve a pedir la lista
   async function handleFilters(name, checked) {
-    console.log('handleFilters', name, checked)
     const newFilters = {
       name: name,
       checked: checked
@@ -36,6 +43,7 @@ export default function App() {
     await window.api.getList()
   }
 
+  // Devuelve la lista filtrada con los parámetros del estado filters
   function getFilteredList(list) {
     let filteredList = [...list]
     if (filters.name.length > 0 || filters.checked) {

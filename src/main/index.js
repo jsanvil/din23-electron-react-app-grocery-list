@@ -61,11 +61,10 @@ app.on('window-all-closed', () => {
 })
 
 // Register events
-const store = new StoreManager({ name: 'main' })
+const store = new StoreManager({ name: 'app-data' })
 
 ipcMain.handle('store:get-list', async () => {
   try {
-    console.log('MAIN store:get-list')
     const list = await store.getList()
     mainWindow.send('list-updated', list)
   } catch (error) {
@@ -75,17 +74,15 @@ ipcMain.handle('store:get-list', async () => {
 
 // GET ITEM (ID)
 ipcMain.handle('store:get-item', async (event, itemId) => {
-  console.log('MAIN store:get-item', itemId)
-  const item = store.getItem(itemId)
-  console.log('MAIN store:get-item RESULT', item)
-  return item
+  return await store.getItem(itemId)
 })
 
+// ADD ITEM
 ipcMain.on('store:add-item', (event, item) => {
-  console.log('MAIN store:add-item', item)
   mainWindow.send('list-updated', store.addItem(item))
 })
 
+// DELETE ITEM
 ipcMain.handle('store:delete-item', async (event, item) => {
   const result = await dialog.showMessageBox(mainWindow, {
     type: 'warning',
@@ -97,12 +94,36 @@ ipcMain.handle('store:delete-item', async (event, item) => {
   })
 
   if (result.response === 1) {
-    console.log('MAIN store:delete-item', item)
+    console.log('Borrando', item)
     mainWindow.send('list-updated', store.deleteItem(item))
+    return true
   }
 })
 
+// UPDATE ITEM
 ipcMain.on('store:update-item', (event, item) => {
-  console.log('MAIN store:update-item', item)
   mainWindow.send('list-updated', store.updateItem(item))
+})
+
+// CONFIRM ITEM
+ipcMain.handle('store:confirm-item', async (event, item) => {
+  const result = await dialog.showMessageBox(mainWindow, {
+    type: 'question',
+    title: `Hay cambios sin guardar`,
+    message: `¿Seguro que deseas descartar los cambios?`,
+    detail: 'Se perderán los cambios realizados en el producto.',
+    buttons: ['Cancelar', 'Guardar', 'Descartar'],
+    cancelId: 0,
+    defaultId: 2
+  })
+
+  switch (result.response) {
+    case 0:
+      return 'cancel'
+    case 1:
+      mainWindow.send('list-updated', store.updateItem(item))
+      return 'save'
+    case 2:
+      return 'discard'
+  }
 })
